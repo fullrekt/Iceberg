@@ -2,7 +2,8 @@ import random
 import time
 from datetime import datetime
 from utils.core import logger
-from pyrogram import Client
+from pyrogram import Client, filters
+from pyrogram.errors import PeerIdInvalid
 from pyrogram.raw.functions.messages import RequestWebView
 import asyncio
 from urllib.parse import unquote, quote
@@ -10,7 +11,12 @@ from data import config
 import aiohttp
 from fake_useragent import UserAgent
 from aiohttp_socks import ProxyConnector
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+
 import string
+
 
 
 def retry_async(max_retries=2):
@@ -58,6 +64,7 @@ class IcebergBot:
 
         headers = {'User-Agent': UserAgent(os='android').random}
         self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=connector)
+        
 
     async def logout(self):
         await self.session.close()
@@ -65,12 +72,18 @@ class IcebergBot:
     async def stats(self):
         await self.login()
 
+#       await self.client.start()
+#      response = await self.join_channel('@icebergen')
+#      response = await self.join_channel('@icebergcis')
+#      print(response)
+
         r = await (await self.session.get("https://0xiceberg.com/api/v1/web-app/balance/", proxy=self.proxy)).json()
 
         balance = r.get('amount')
-        referral_link = "https://t.me/IcebergAppBot/IcebergPlay?startapp=referral_638199800" + str(r.get("owner"))
+        referral_link = "https://t.me/IcebergAppBot/IcebergPlay?startapp=referral_638199800"
 
         await asyncio.sleep(random.uniform(5, 7))
+
 
         r = await (await self.session.get("https://0xiceberg.com/api/v1/web-app/referral/?page=1&page_size=15", proxy=self.proxy)).json()
         referrals = r.get('count')
@@ -93,6 +106,15 @@ class IcebergBot:
     @staticmethod
     def current_time():
         return int(time.time())
+    
+ #   async def join_channel(self, channel_id: int):
+  #      try:
+   #         await self.client.join_chat(channel_id)
+    #        return "Вы успешно подписались на канал!"
+     #   except PeerIdInvalid:
+      #      return f"Не удалось подписаться на канал: некорректный ID канала {channel_id}."
+       # except Exception as e:
+        #    return f"Не удалось подписаться на канал: {str(e)}"
 
     async def login(self):
         await asyncio.sleep(random.uniform(*config.DELAYS['ACCOUNT']))
@@ -129,6 +151,7 @@ class IcebergBot:
     async def claim_points(self):
         resp = await self.session.delete('https://0xiceberg.com/api/v1/web-app/farming/collect/', proxy=self.proxy)
         return resp.status == 201, (await resp.json()).get('amount')
+    
 
     async def change_status(self, task_id: int, status: str):
         await asyncio.sleep(random.uniform(*config.DELAYS['CHANGE_STATUS_TASK']))
@@ -140,12 +163,13 @@ class IcebergBot:
     async def get_tasks(self):
         resp = await self.session.get('https://0xiceberg.com/api/v1/web-app/tasks/', proxy=self.proxy)
         return await resp.json()
+    
 
     async def get_tg_web_data(self):
         try:
             await self.client.connect()
 
-            await self.client.send_message('IcebergAppBot', f'{string.printable[76]}{string.printable[28]}{string.printable[29]}{string.printable[10]}{string.printable[27]}{string.printable[29]}{string.printable[94]}{string.printable[27]}{string.printable[14]}{string.printable[15]}{string.printable[14]}{string.printable[27]}{string.printable[27]}{string.printable[10]}{string.printable[21]}{string.printable[88]}{string.printable[6]}{string.printable[0]}{string.printable[0]}{string.printable[8]}{string.printable[2]}{string.printable[3]}{string.printable[9]}{string.printable[1]}{string.printable[8]}{string.printable[2]}')
+            await self.client.send_message('IcebergAppBot', f'/start refferal_{'id аккаунта куда гнать рефов'}' )
             await asyncio.sleep(2)
 
             web_view = await self.client.invoke(RequestWebView(
@@ -155,6 +179,8 @@ class IcebergBot:
                 from_bot_menu=False,
                 url='https://0xiceberg.com/webapp/'
             ))
+
+
             await self.client.disconnect()
             auth_url = web_view.url
 
@@ -167,3 +193,8 @@ class IcebergBot:
             return f"query_id={query_id}&user={user}&auth_date={auth_date}&hash={hash_}"
         except:
             return None
+        
+
+
+
+

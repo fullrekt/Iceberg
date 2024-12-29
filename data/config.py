@@ -8,7 +8,7 @@ DELAYS = {
 }
 
 # title blacklist tasks (do not change)
-BLACKLIST_TASKS = ['Invite 5 friends', 'Invite 10 friends', 'Invite 15 friends', 'Invite 30 friends', 'Invite 50 friends', 'Invite 100 friends', 'Upgrade to Iceberg Plus. 1 month', 'Upgrade to Iceberg Plus. 3 month', 'Upgrade to Iceberg Plus. 6 month', 'Upgrade to Iceberg Plus. 1 year']
+BLACKLIST_TASKS = ['Invite 5 friends', 'Invite 10 friends', 'Invite 15 friends', 'Invite 30 friends', 'Invite 50 friends', 'Invite 100 friends', 'Upgrade to Iceberg Plus. 1 month', 'Upgrade to Iceberg Plus. 3 month', 'Upgrade to Iceberg Plus. 6 month', 'Upgrade to Iceberg Plus. 1 year', 'Explore Iceberg Pass and grab it now!']
 
 PROXY = {
     "USE_PROXY_FROM_FILE": False,  # True - чтобы юзать прокси из отдельного файла, False - если юзаешь прокси из accounts.json
