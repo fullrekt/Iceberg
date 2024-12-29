@@ -11,21 +11,6 @@ async def main():
     print("Автор софта fullrekt\n")
     action = int(input("Выбери действие:\n1. Запуск\n2. Статистика\n3. Cоздать сессию\n\n> "))
 
-    if action == 0:
-        print(config.SOFT_INFO)
-        return
-
-    if not os.path.exists('sessions'): os.mkdir('sessions')
-
-    if config.PROXY['USE_PROXY_FROM_FILE']:
-        if not os.path.exists(config.PROXY['PROXY_PATH']):
-            with open(config.PROXY['PROXY_PATH'], 'w') as f:
-                f.write("")
-    else:
-        if not os.path.exists('sessions/accounts.json'):
-            with open("sessions/accounts.json", 'w') as f:
-                f.write("[]")
-
     if action == 3:
         await Accounts().create_sessions()
 

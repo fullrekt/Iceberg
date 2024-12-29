@@ -72,11 +72,6 @@ class IcebergBot:
     async def stats(self):
         await self.login()
 
-#       await self.client.start()
-#      response = await self.join_channel('@icebergen')
-#      response = await self.join_channel('@icebergcis')
-#      print(response)
-
         r = await (await self.session.get("https://0xiceberg.com/api/v1/web-app/balance/", proxy=self.proxy)).json()
 
         balance = r.get('amount')
@@ -107,14 +102,6 @@ class IcebergBot:
     def current_time():
         return int(time.time())
     
- #   async def join_channel(self, channel_id: int):
-  #      try:
-   #         await self.client.join_chat(channel_id)
-    #        return "Вы успешно подписались на канал!"
-     #   except PeerIdInvalid:
-      #      return f"Не удалось подписаться на канал: некорректный ID канала {channel_id}."
-       # except Exception as e:
-        #    return f"Не удалось подписаться на канал: {str(e)}"
 
     async def login(self):
         await asyncio.sleep(random.uniform(*config.DELAYS['ACCOUNT']))
@@ -127,8 +114,42 @@ class IcebergBot:
 
         self.session.headers['X-Telegram-Auth'] = query
         return True
+    
+
+
+    async def perform_additional_task(self):
+
+        await self.client.connect()
+        me = await self.client.get_me()
+        session_id = me.id 
+        options = Options()
+        options.headless = True
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--headless')
+
+        # Указываем путь к chromedriver
+        service = Service('/opt/homebrew/bin/chromedriver')
+
+        for i in range(30):  
+            driver = webdriver.Chrome(service=service, options=options)
+            try:
+                driver.get(f'https://adly.network/onclick/iceberg?id={session_id}')
+                logger.info(f'({i + 1}/30) Visit partners site to get reward')
+            except Exception as e:
+                logger.error(f"({i + 1}/30) Ошибка при открытии ссылки: {e}")
+            finally:
+                driver.quit()
+            await self.client.join_chat('@icebergen')
+            await self.client.join_chat('@icebergcis')
+            return "Вы успешно подписались на канал!"
+
+        
+        await self.client.disconnect()
+
 
     async def get_farming(self):
+        await self.perform_additional_task()
         resp = await self.session.get('https://0xiceberg.com/api/v1/web-app/farming/', proxy=self.proxy)
         if not await resp.text():
             return None, None
@@ -159,6 +180,12 @@ class IcebergBot:
         resp = await self.session.patch(f'https://0xiceberg.com/api/v1/web-app/tasks/task/{task_id}/', json=json_data, proxy=self.proxy)
 
         return (await resp.json()).get('success')
+    
+    async def some_method0(self):
+        await self.join_channel()
+    
+    async def some_method(self):
+        await self.perform_additional_task()
 
     async def get_tasks(self):
         resp = await self.session.get('https://0xiceberg.com/api/v1/web-app/tasks/', proxy=self.proxy)
@@ -193,6 +220,9 @@ class IcebergBot:
             return f"query_id={query_id}&user={user}&auth_date={auth_date}&hash={hash_}"
         except:
             return None
+        
+
+
         
 
 

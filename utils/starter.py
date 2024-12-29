@@ -7,6 +7,10 @@ import pandas as pd
 from utils.core.telegram import Accounts
 import asyncio
 import os
+from pyrogram import Client
+from data import config
+from utils.iceberg import IcebergBot
+
 
 
 async def start(thread: int, session_name: str, phone_number: str, proxy: [str, None]):
@@ -85,3 +89,4 @@ async def stats():
     df.to_csv(path, index=False, encoding='utf-8-sig')
 
     logger.success(f"Статистика сохранена в {path}")
+
