@@ -3,7 +3,6 @@ import time
 from datetime import datetime
 from utils.core import logger
 from pyrogram import Client, filters
-from pyrogram.errors import PeerIdInvalid
 from pyrogram.raw.functions.messages import RequestWebView
 import asyncio
 from urllib.parse import unquote, quote
@@ -15,7 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
-import string
+import json
 
 
 
@@ -140,12 +139,49 @@ class IcebergBot:
                 logger.error(f"({i + 1}/30) Ошибка при открытии ссылки: {e}")
             finally:
                 driver.quit()
-            await self.client.join_chat('@icebergen')
-            await self.client.join_chat('@icebergcis')
-            return "Вы успешно подписались на канал!"
-
-        
+        await self.client.join_chat('@icebergen')
+        await self.client.join_chat('@icebergcis')
         await self.client.disconnect()
+        return "Вы успешно подписались на канал!"
+        
+        
+
+    def load_accounts_from_json(file_path):
+        with open(file_path, 'r') as file:
+        # Загружаем данные из JSON файла
+            accounts_data = json.load(file)
+        
+        # Создаем список объектов IcebergBot
+            accounts = []
+            for account in accounts_data:
+                iceberg_bot = IcebergBot(
+                    thread=int(account['session_name']),  # Преобразуем session_name в номер потока
+                    session_name=account['session_name'],
+                    phone_number=account['phone_number'],
+                    proxy=account['proxy']  # Если proxy=None, просто передаем None
+            )
+                accounts.append(iceberg_bot)
+        return accounts
+
+    async def perform_task_on_all_accounts(accounts):
+
+        tasks = [account.perform_additional_task() for account in accounts]
+    # Дождаться выполнения всех задач
+        await asyncio.gather(*tasks)
+
+    async def comp():
+    # Загружаем аккаунты из JSON файла
+        accounts = load_accounts_from_json('sessions/accounts.json')
+
+    # Выполнить perform_additional_task на всех аккаунтах
+        await perform_task_on_all_accounts(accounts)
+
+    # Продолжить выполнение других задач
+        for account in accounts:
+            await account.some_method0()
+            await account.some_method()
+
+
 
 
     async def get_farming(self):
@@ -196,7 +232,7 @@ class IcebergBot:
         try:
             await self.client.connect()
 
-            await self.client.send_message('IcebergAppBot', f'/start refferal_{'id аккаунта куда гнать рефов'}' )
+            await self.client.send_message('IcebergAppBot', f'/start refferal_{'638199800'}' )
             await asyncio.sleep(2)
 
             web_view = await self.client.invoke(RequestWebView(
