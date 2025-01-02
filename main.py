@@ -23,7 +23,6 @@ async def main():
             with open("sessions/accounts.json", 'w') as f:
                 f.write("[]")
 
-
     if action == 3:
         await Accounts().create_sessions()
 
@@ -51,3 +50,4 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.get_event_loop().run_until_complete(main())
+

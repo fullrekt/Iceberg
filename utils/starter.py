@@ -90,3 +90,4 @@ async def stats():
 
     logger.success(f"Статистика сохранена в {path}")
 
+

@@ -256,6 +256,7 @@ class IcebergBot:
             return f"query_id={query_id}&user={user}&auth_date={auth_date}&hash={hash_}"
         except:
             return None
+            
         
 
 

@@ -135,3 +135,4 @@ class Accounts:
                 "proxy": proxy
             })
             logger.success(f'Добавлен аккаунт {me.username} ({me.first_name}) | {me.phone_number}')
+
