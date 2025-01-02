@@ -1,5 +1,5 @@
-API_ID = Твой api_id
-API_HASH = 'Твой Api_hash'
+API_ID = 29748423
+API_HASH = '5f64b4e1b0e6f7ffa5753e100c0dff69'
 
 DELAYS = {
     'ACCOUNT': [5, 10],  
