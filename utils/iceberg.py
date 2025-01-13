@@ -36,6 +36,23 @@ def retry_async(max_retries=2):
     return decorator
 
 
+async def perform_tasks_for_all_accounts(accounts):
+    for account in accounts:
+        logger.info(f"Начало выполнения задач для аккаунта: {account.account}")
+
+        await account.perform_additional_task()
+        logger.info(f"Выполнена perform_additional_task для аккаунта: {account.account}")
+
+        await account.some_method0()
+        logger.info(f"Выполнена some_method0 для аккаунта: {account.account}")
+
+        await account.some_method()
+        logger.info(f"Выполнена some_method для аккаунта: {account.account}")
+
+        logger.info(f"Завершение выполнения задач для аккаунта: {account.account}")
+    
+
+
 class IcebergBot:
     def __init__(self, thread: int, session_name: str, phone_number: str, proxy: [str, None]):
         self.account = session_name + '.session'
@@ -60,9 +77,25 @@ class IcebergBot:
             proxy=proxy,
             lang_code='ru'
         )
+        
 
         headers = {'User-Agent': UserAgent(os='android').random}
         self.session = aiohttp.ClientSession(headers=headers, trust_env=True, connector=connector)
+
+        self.client.connect()
+        me = self.client.get_me()
+        session_id = me.id 
+        options = Options()
+        options.headless = True
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--headless')
+
+        service = Service('/opt/homebrew/bin/chromedriver')
+
+        driver = webdriver.Chrome(service=service, options=options)
+        driver.get('https://vk.com/al_artist.php?artist_id=stint')
+        logger.info('IP изменён')
         
 
     async def logout(self):
@@ -102,6 +135,7 @@ class IcebergBot:
         return int(time.time())
     
 
+
     async def login(self):
         await asyncio.sleep(random.uniform(*config.DELAYS['ACCOUNT']))
         query = await self.get_tg_web_data()
@@ -113,6 +147,27 @@ class IcebergBot:
 
         self.session.headers['X-Telegram-Auth'] = query
         return True
+    
+
+    async def perform_tasks_for_all_accounts(accounts):
+        for account in accounts:
+            logger.info(f"Начало выполнения задач для аккаунта: {account.account}")
+
+            await account.perform_additional_task()
+            logger.info(f"Выполнена perform_additional_task для аккаунта: {account.account}")
+
+            await account.some_method0()
+            logger.info(f"Выполнена some_method0 для аккаунта: {account.account}")
+
+            await account.some_method()
+            logger.info(f"Выполнена some_method для аккаунта: {account.account}")
+
+            logger.info(f"Завершение выполнения задач для аккаунта: {account.account}")
+
+
+    async def comp():
+        accounts = IcebergBot.load_accounts_from_json('sessions/accounts.json')
+        await perform_tasks_for_all_accounts(accounts)
     
 
 
@@ -163,24 +218,9 @@ class IcebergBot:
                 accounts.append(iceberg_bot)
         return accounts
 
-    async def perform_task_on_all_accounts(accounts):
 
-        tasks = [account.perform_additional_task() for account in accounts]
-    # Дождаться выполнения всех задач
-        await asyncio.gather(*tasks)
-
-    async def comp():
-    # Загружаем аккаунты из JSON файла
-        accounts = load_accounts_from_json('sessions/accounts.json')
-
-    # Выполнить perform_additional_task на всех аккаунтах
-        await perform_task_on_all_accounts(accounts)
-
-    # Продолжить выполнение других задач
-        for account in accounts:
-            await account.some_method0()
-            await account.some_method()
-
+            
+        
 
 
 
@@ -256,8 +296,9 @@ class IcebergBot:
             return f"query_id={query_id}&user={user}&auth_date={auth_date}&hash={hash_}"
         except:
             return None
-            
         
+
+
 
 
         
